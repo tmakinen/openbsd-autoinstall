@@ -43,7 +43,7 @@ echo "Create boot.conf..."
 mkdir "${WORKDIR}/iso/etc"
 {
     echo "set tty com0"
-    echo "set image /${VERSION}/${ARCH}/kakka/bsd.rd"
+    echo "set image /${VERSION}/${ARCH}/bsd.rd"
     echo "boot"
 } > "${WORKDIR}/iso/etc/boot.conf"
 
