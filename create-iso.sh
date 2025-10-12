@@ -48,10 +48,10 @@ mkdir "${WORKDIR}/iso/etc"
 } > "${WORKDIR}/iso/etc/boot.conf"
 
 echo "Creating iso image..."
-mkhybrid -R -T -l -L -d -D -N -o openbsd-autoinstall.iso \
-  -A "OpenBSD/${MACHINE}" \
-  -P "OpenBSD Project" \
-  -V "OpenBSD/${MACHINE}" \
-  -b "${OSREV}/${MACHINE}/cdbr" \
-  -c "${OSREV}/${MACHINE}boot.catalog" \
+mkhybrid -a -R -T -L -l -d -D -N -o openbsd-autoinstall.iso \
+  -A "OpenBSD ${OSREV} ${MACHINE} Autoinstall CD" \
+  -P "Copyright (c) `date +%Y` The OpenBSD project" \
+  -p "Timo Maekinen <tmakinen@foo.sh>" \
+  -V "OpenBSD/${MACHINE}   ${OSREV} Install CD" \
+  -b "${OSREV}/${MACHINE}/cdbr" -c "${OSREV}/${MACHINE}boot.catalog" \
   "${WORKDIR}/iso"
