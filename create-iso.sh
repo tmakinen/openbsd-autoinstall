@@ -14,8 +14,12 @@ OSREV="$(basename "$(dirname "$1")")"
 
 WORKDIR="$(mktemp -d)"
 trap '{
-    mount | grep -Eq "^/dev/vnd0a on ${WORKDIR}/mount " && umount "${WORKDIR}/mount"
-    vnconfig -l vnd0 | grep -Fq "not in use" || vnconfig -u vnd0
+    if [ -n "$_vnd" ]; then
+        mount | grep -Eq "^/dev/${_vnd}a on ${WORKDIR}/mount " && \
+            umount "${WORKDIR}/mount"
+        vnconfig -l "$_vnd" | grep -Fq "not in use" || \
+            vnconfig -u "$_vnd"
+    fi
     rm -rf "${WORKDIR}"
 }' EXIT
 mkdir "${WORKDIR}/mount"
@@ -30,11 +34,17 @@ for f in BOOTIA32.EFI BOOTX64.EFI bsd.rd ; do
     curl -sSf -o "${WORKDIR}/${f}" "${URL}/${f}"
 done
 
+_vnd="$(vnconfig -l | sed -n "s/^\(vnd[0-9]\): not in use/\1/p" | head -n 1)"
+if [ -z "$_vnd" ]; then
+    echo "ERROR: Cannot find free vnd device. Exiting..." 1>&2
+    exit 1
+fi
+
 echo "Creating custom bsd.rd..."
 zcat "${WORKDIR}/bsd.rd" > "${WORKDIR}/bsd.urd"
 rdsetroot -x "${WORKDIR}/bsd.urd" "${WORKDIR}/bsd.fs"
-vnconfig vnd0 "${WORKDIR}/bsd.fs"
-mount /dev/vnd0a "${WORKDIR}/mount"
+vnconfig "$_vnd" "${WORKDIR}/bsd.fs"
+mount "/dev/${_vnd}a" "${WORKDIR}/mount"
 install -m 0644 auto_install.conf "${WORKDIR}/mount/auto_install.conf"
 install -m 0644 autopart.conf "${WORKDIR}/mount/autopart.conf"
 umount "${WORKDIR}/mount"
