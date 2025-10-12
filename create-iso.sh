@@ -9,8 +9,8 @@ if [ "$#" -ne 1 ]; then
 fi
 
 URL="$1"
-ARCH="$(basename "$1")"
-VERSION="$(basename "$(dirname "$1")")"
+MACHINE="$(basename "$1")"
+OSREV="$(basename "$(dirname "$1")")"
 
 WORKDIR="$(mktemp -d)"
 trap '{
@@ -19,11 +19,11 @@ trap '{
     rm -rf "${WORKDIR}"
 }' EXIT
 mkdir "${WORKDIR}/mount"
-mkdir -p "${WORKDIR}/iso/${VERSION}/${ARCH}"
+mkdir -p "${WORKDIR}/iso/${OSREV}/${MACHINE}"
 
 for f in cdboot cdbr; do
     echo "Downloading ${f}..."
-    curl -sSf -o "${WORKDIR}/iso/${VERSION}/${ARCH}/${f}" "${URL}/${f}"
+    curl -sSf -o "${WORKDIR}/iso/${OSREV}/${MACHINE}/${f}" "${URL}/${f}"
 done
 echo "Downloading bsd.rd..."
 curl -sSf -o "${WORKDIR}/bsd.rd" "${URL}/bsd.rd"
@@ -37,21 +37,21 @@ install -m 0644 auto_install.conf "${WORKDIR}/mount/auto_install.conf"
 install -m 0644 autopart.conf "${WORKDIR}/mount/autopart.conf"
 umount "${WORKDIR}/mount"
 rdsetroot "${WORKDIR}/bsd.urd" "${WORKDIR}/bsd.fs"
-compress -9 < "${WORKDIR}/bsd.urd" > "${WORKDIR}/iso/${VERSION}/${ARCH}/bsd.rd"
+compress -9 < "${WORKDIR}/bsd.urd" > "${WORKDIR}/iso/${OSREV}/${MACHINE}/bsd.rd"
 
 echo "Create boot.conf..."
 mkdir "${WORKDIR}/iso/etc"
 {
     echo "set tty com0"
-    echo "set image /${VERSION}/${ARCH}/bsd.rd"
+    echo "set image /${OSREV}/${MACHINE}/bsd.rd"
     echo "boot"
 } > "${WORKDIR}/iso/etc/boot.conf"
 
 echo "Creating iso image..."
 mkhybrid -R -T -l -L -d -D -N -o openbsd-autoinstall.iso \
-  -A "OpenBSD/${ARCH}" \
+  -A "OpenBSD/${MACHINE}" \
   -P "OpenBSD Project" \
-  -V "OpenBSD/${ARCH}" \
-  -b "${VERSION}/${ARCH}/cdbr" \
-  -c "${VERSION}/${ARCH}boot.catalog" \
+  -V "OpenBSD/${MACHINE}" \
+  -b "${OSREV}/${MACHINE}/cdbr" \
+  -c "${OSREV}/${MACHINE}boot.catalog" \
   "${WORKDIR}/iso"
