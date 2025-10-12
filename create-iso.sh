@@ -69,7 +69,7 @@ makefs -t msdos -o create_size=350K \
 echo "Creating iso image..."
 mkhybrid -a -R -T -L -l -d -D -N -o "auto$(echo "$OSREV" | tr -d '.').iso" \
     -A "OpenBSD ${OSREV} ${MACHINE} Autoinstall CD" \
-    -P "Copyright (c) `date +%Y` The OpenBSD project" \
+    -P "Copyright (c) $(date +%Y) The OpenBSD project" \
     -p "Timo Maekinen <tmakinen@foo.sh>" \
     -V "OpenBSD/${MACHINE}   ${OSREV} Install CD" \
     -b "${OSREV}/${MACHINE}/cdbr" -c "${OSREV}/${MACHINE}boot.catalog" \
