@@ -10,7 +10,6 @@ fi
 
 URL="$1"
 MACHINE="$(basename "$1")"
-OSREV="$(basename "$(dirname "$1")")"
 
 WORKDIR="$(mktemp -d)"
 trap '{
