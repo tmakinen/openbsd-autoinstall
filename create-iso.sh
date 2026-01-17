@@ -13,7 +13,7 @@ MACHINE="$(basename "$1")"
 OSREV="$(basename "$(dirname "$1")")"
 
 WORKDIR="$(mktemp -d)"
-trap 'rm -rf "${WORKDIR}'
+trap 'rm -rf "${WORKDIR}"'
 mkdir -p "${WORKDIR}/iso/${OSREV}/${MACHINE}"
 
 for f in cdboot cdbr; do
