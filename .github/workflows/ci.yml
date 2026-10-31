@@ -45,7 +45,6 @@ jobs:
         with:
           operating_system: openbsd
           version: "8.0"
-          sync_files: both
           run: |
             ./create-iso.sh https://cdn.openbsd.org/pub/OpenBSD/8.0/amd64
       - name: Store ISO image as artifact
