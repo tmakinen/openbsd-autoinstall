@@ -40,13 +40,15 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
           persist-credentials: false
-      - name: Build ISO
+      - name: Start OpenBSD virtual machine
         uses: cross-platform-actions/action@82668f1fbd89d9c99487604f822cbf6716f124d3  # v1.7.0
         with:
           operating_system: openbsd
           version: "8.0"
-          run: |
-            sudo ./create-iso.sh https://cdn.openbsd.org/pub/OpenBSD/8.0/amd64
+      - name: Build ISO image
+        shell: cpa.sh {0}
+        run: |
+          sudo ./create-iso.sh https://cdn.openbsd.org/pub/OpenBSD/8.0/amd64
       - name: Store ISO image as artifact
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9  # v7.0.2
         with:
